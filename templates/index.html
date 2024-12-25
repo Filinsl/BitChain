@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Chain</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding-top: 60px;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(51, 51, 51, 0.8);
+            color: white;
+            padding: 15px;
+            z-index: 1000;
+        }
+        .navbar .center {
+            flex: 1;
+            text-align: center;
+        }
+        .navbar .center a {
+            color: white;
+            text-decoration: none;
+            font-size: 2rem;
+            font-weight: bold;
+            padding-left: 20px; /* Добавляем отступ слева */
+        }
+        .navbar .github-icon {
+            width: 40px;
+            height: auto;
+            margin-left: 20px;
+        }
+        h1 {
+            font-size: 3rem; 
+            color: #333;
+        }
+        h2 {
+            font-size: 2rem;
+            color: #555;
+        }
+        p {
+            font-size: 1.25rem; 
+            color: #666;
+        }
+        #status {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            word-wrap: break-word; 
+            position: relative; 
+        }
+        .copyable {
+            display: inline-block;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer; 
+            transition: background-color 0.3s; 
+        }
+        .copyable:hover {
+            background-color: #e9e9e9; 
+        }
+        .notification {
+            position: absolute; 
+            right: 10px; 
+            top: 10px; 
+            background-color: white; 
+            color: black; 
+            padding: 5px;
+            border-radius: 5px;
+            display: none; 
+            z-index: 1000; 
+            border: 1px solid #ccc;
+            opacity: 0; 
+            transition: opacity 0.5s ease-in-out; 
+        }
+        span {
+            font-weight: bold;
+        }
+        #transactions {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            word-wrap: break-word; 
+        }
+        .transaction {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        @media only screen and (max-width: 600px) {
+            body {
+                padding-top: 60px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            p {
+                font-size: 1rem;
+            }
+            #lastWallet {
+                font-size: 0.8rem;
+                overflow-wrap: break-word;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="center">
+            <a href="{{ url_for('about') }}">BitChain</a>
+        </div>
+        <a href="https://github.com/Filinsl/bitchain" target="_blank">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" alt="GitHub" class="github-icon" style="filter: invert(1);">
+        </a>        
+    </div>
+    
+    <div id="status">
+        <p>Last Wallet:</p>
+        <span class="copyable" id="lastWallet" onclick="copyToClipboard('lastWallet')">{{ last_wallet }}</span>
+        <p>Price $ :</p>
+        <span class="copyable" id="currentPrice" onclick="copyToClipboard('currentPrice')">{{ current_price }} </span>
+        <div class="notification" id="notification">Copied!</div>
+    </div>
+    <div id="transactions">
+        <h2>Transaction History</h2>
+        <div id="transactionList"></div>
+    </div>
+    <script>
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const textToCopy = element.innerText;
+
+            const tempInput = document.createElement('input');
+            tempInput.value = textToCopy;
+            document.body.appendChild(tempInput);
+
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            const notification = document.getElementById('notification');
+            notification.style.display = 'block';
+            notification.style.opacity = '1';
+
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => { notification.style.display = 'none'; }, 500);
+            }, 2000);
+        }
+
+        setInterval(() => {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('lastWallet').innerText = data.last_wallet;
+                    document.getElementById('currentPrice').innerText = data.current_price;
+                })
+                .catch(error => console.error('Error:', error));
+        }, 10000);
+
+        setInterval(() => {
+            const walletAddress = document.getElementById('lastWallet').innerText;
+            fetch(`/check_transaction/${walletAddress}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert(data.message);
+                        document.getElementById('currentPrice').innerText = data.new_price;
+                        document.getElementById('lastWallet').innerText = data.last_paying_wallet;
+                        fetchTransactions();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }, 10000);
+
+        function fetchTransactions() {
+            fetch('/static/transactions.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const transactionList = document.getElementById('transactionList');
+                    transactionList.innerHTML = '';
+
+                    data.forEach(transaction => {
+                        const transactionDiv = document.createElement('div');
+                        transactionDiv.className = 'transaction';
+                        transactionDiv.innerHTML = `
+                            <strong>From:</strong> ${transaction.from}<br>
+                            <strong>To:</strong> ${transaction.to}<br>
+                            <strong>Amount:</strong> ${transaction.amount} BTC
+                        `;
+                        transactionList.appendChild(transactionDiv);
+                    });
+                })
+                .catch(error => console.error('Error fetching transactions:', error));
+        }
+
+        fetchTransactions();
+    </script>
+</body>
+</html>

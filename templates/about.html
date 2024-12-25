@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px; 
+            text-align: center; 
+        }
+        h1 {
+            font-size: 2rem; 
+            color: #333;
+        }
+        p {
+            font-size: 1rem; 
+            color: #666;
+        }
+        img {
+            max-width: 100%; 
+            height: auto; 
+            cursor: pointer; 
+            border: 5px solid black; 
+            padding: 5px; 
+            background-color: white; 
+        }
+       
+        .overlay {
+            display: none; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); 
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; 
+        }
+        .overlay img {
+            max-width: 90%; 
+            max-height: 90%; 
+        }
+    </style>
+</head>
+<body>
+    <h1>About Project</h1>
+    <p>
+        Each user sends the specified amount to the designated wallet. After the transaction is confirmed, their address appears on the main page with the doubled amount. The next user who sends funds transfers the already doubled amount from the previous user, and their address is also added to the chain.
+        In this way, the system automatically redistributes funds among participants in a queue. Everything is completely transparent: each transaction can be verified on the blockchain, and the display on the main page ensures that no one is overlooked.
+    </p>
+
+ <img id="projectImage" src="static/img/1.png" alt="Project Image" onclick="openImage(this)">
+  
+  
+
+  
+    <div class="overlay" id="overlay" onclick="closeImage()">
+        <img id="largeImage" src="" alt="Enlarged Image">
+    </div>
+
+    <script>
+        function openImage(img) {
+            const overlay = document.getElementById('overlay');
+            const largeImage = document.getElementById('largeImage');
+            
+       
+            largeImage.src = img.src;
+            
+           
+            overlay.style.display = 'flex';
+        }
+
+        function closeImage() {
+            const overlay = document.getElementById('overlay');
+            
+           
+            overlay.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
