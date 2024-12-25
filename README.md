@@ -18,12 +18,6 @@ Thus, the system automatically redistributes funds among participants in a queue
 
 ---
 
-## 🤝 Contribution
-
-We welcome community contributions! If you would like to make changes or improvements, please create a fork of the repository and submit a pull request.
-
----
-
 ## 📬 Contacts
 
 If you have any questions or suggestions, you can contact us via email: filins1002@gmail.com
