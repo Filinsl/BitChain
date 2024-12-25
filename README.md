@@ -1,4 +1,4 @@
-# BitChain
+# BitChain - https://bitchain.fun
 
 ## 📖 Project Description
 
