@@ -1,4 +1,4 @@
-# 🚀 BitChain
+# BitChain
 
 ## 📖 Project Description
 
