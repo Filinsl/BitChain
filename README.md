@@ -20,7 +20,7 @@ Thus, the system automatically redistributes funds among participants in a queue
 
 ## 📬 Contacts
 
-If you have any questions or suggestions, you can contact us via email: filins1002@gmail.com
+If you have any questions or suggestions, you can contact us via email: support@bitchain.fun
 
 ---
 
